@@ -720,7 +720,7 @@ EXAMPLES_DIR = $(BASE_DIR)/$(DOC_MODULE)/examples
 #
 LCOV = /usr/bin/lcov
 GENHTML = /usr/bin/genhtml
-all: config.h
+all: config.h libxml2.dll
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
 .SUFFIXES:
@@ -2743,3 +2743,15 @@ clean-cov:
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
+
+REAL_LIBOBJ = $(libxml2_la_OBJECTS:%.lo=.libs/%.o)
+
+libxml2.dll: libxml2.la
+	cp .libs/xml2.a .libs/xml2_s.a
+	echo "LIBRARY libxml2 INITINSTANCE TERMINSTANCE" > libxml2.def
+	echo "DATA MULTIPLE" >> libxml2.def
+	echo "EXPORTS" >> libxml2.def
+	emxexp $(REAL_LIBOBJ) >> libxml2.def
+	gcc -g -Zbin-files -Zhigh-mem -Zomf -Zdll libxml2.def -o $@ $(REAL_LIBOBJ) -lz $(LIBS) 
+	emximp -o .libs/xml2.a libxml2.def
+	emximp -o .libs/xml2.lib libxml2.def
