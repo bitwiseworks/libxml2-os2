@@ -1246,7 +1246,7 @@ else
     TEST_SAX=SAXtests
 fi
 AC_SUBST(WITH_SAX1)
-AM_CONDITIONAL(WITH_SAX1_SOURCES, test "${WITH_TRIO}" = "1")
+AM_CONDITIONAL(WITH_SAX1_SOURCES, test "${WITH_SAX1}" = "1")
 AC_SUBST(TEST_SAX)
 
 if test "$with_push" = "no" ; then
