@@ -931,6 +931,8 @@ xmlFileOpen_real (const char *filename) {
 
 #if defined(_WIN32) || defined (__DJGPP__) && !defined (__CYGWIN__)
     fd = xmlWrapOpen(path, 0);
+#elif defined(__OS2__)
+    fd = fopen(path, "rb");
 #else
     fd = fopen(path, "r");
 #endif /* WIN32 */

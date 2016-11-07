@@ -46,7 +46,7 @@
 #define MAX_DELEGATE	50
 #define MAX_CATAL_DEPTH	50
 
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__OS2__)
 # define PATH_SEPARATOR ';'
 #else
 # define PATH_SEPARATOR ':'
@@ -976,7 +976,11 @@ xmlLoadFileContent(const char *filename)
 #endif
 
 #ifdef HAVE_STAT
+#ifdef __OS2__
+    if ((fd = open(filename, O_RDONLY|O_BINARY)) < 0)
+#else
     if ((fd = open(filename, O_RDONLY)) < 0)
+#endif
 #else
     if ((fd = fopen(filename, "rb")) == NULL)
 #endif
@@ -3235,7 +3239,7 @@ xmlLoadCatalogs(const char *pathss) {
     const char *cur;
     const char *paths;
     xmlChar *path;
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__OS2__)
     int i, iLen;
 #endif
 
@@ -3250,7 +3254,7 @@ xmlLoadCatalogs(const char *pathss) {
 	    while ((*cur != 0) && (*cur != PATH_SEPARATOR) && (!xmlIsBlank_ch(*cur)))
 		cur++;
 	    path = xmlStrndup((const xmlChar *)paths, cur - paths);
-#ifdef _WIN32
+#if defined(_WIN32) || defined(__OS2__)
         iLen = strlen((const char*)path);
         for(i = 0; i < iLen; i++) {
             if(path[i] == '\\') {

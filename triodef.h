@@ -50,7 +50,7 @@
 # define TRIO_PLATFORM_VMS
 #elif defined(__OS400__)
 # define TRIO_PLATFORM_OS400
-#elif defined(unix) || defined(__unix) || defined(__unix__)
+#elif defined(unix) || defined(__unix) || defined(__unix__) || defined(__OS2__)
 # define TRIO_PLATFORM_UNIX
 #elif defined(TRIO_COMPILER_XLC) || defined(_AIX)
 # define TRIO_PLATFORM_UNIX

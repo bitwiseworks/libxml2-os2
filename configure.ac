@@ -965,6 +965,9 @@ if test "$with_modules" != "no" ; then
       *-*-hpux* )
 	MODULE_EXTENSION=".sl"
 	;;
+      *os2* )
+	MODULE_EXTENSION=".dll"
+	;;
       * )
 	MODULE_EXTENSION=".so"
 	;;
