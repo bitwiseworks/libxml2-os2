@@ -1,4 +1,7 @@
 ## Process this file with automake to produce Makefile.in
+VENDOR ?=community
+BUILD_INFO=\#\#1\#\# $(shell date +'%d %b %Y %H:%M:%S')     $(shell uname -n)
+BUILDLEVEL_INFO=@\#$(VENDOR):$(LIBXML_VERSION)\#@$(BUILD_INFO)::::$(LIBXML_MICRO_VERSION)::
 
 ACLOCAL_AMFLAGS = -I m4
 
@@ -31,6 +34,7 @@ endif
 libxml2_la_LDFLAGS = $(CYGWIN_EXTRA_LDFLAGS) $(WIN32_EXTRA_LDFLAGS) \
 		     $(LIBXML2_VERSION_SCRIPT) \
 		     -version-info $(LIBXML_VERSION_INFO) \
+		     -buildlevel '$(BUILDLEVEL_INFO)' \
 		     $(MODULE_PLATFORM_LIBS)
 
 if WITH_SAX1_SOURCES
