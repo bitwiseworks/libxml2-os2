@@ -103,7 +103,11 @@
 #endif
 
 #ifndef XML_XML_DEFAULT_CATALOG
+#ifdef __OS2__
+#define XML_XML_DEFAULT_CATALOG "file:///@unixroot/etc/xml/catalog"
+#else
 #define XML_XML_DEFAULT_CATALOG "file:///etc/xml/catalog"
+#endif
 #endif
 
 typedef enum {

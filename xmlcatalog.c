@@ -43,7 +43,11 @@ static char *filename = NULL;
 
 
 #ifndef XML_SGML_DEFAULT_CATALOG
+#ifdef __OS2__
+#define XML_SGML_DEFAULT_CATALOG "/@unixroot/etc/sgml/catalog"
+#else
 #define XML_SGML_DEFAULT_CATALOG "/etc/sgml/catalog"
+#endif
 #endif
 
 /************************************************************************
