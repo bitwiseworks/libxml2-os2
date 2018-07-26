@@ -327,12 +327,13 @@ xmlFreeCatalogEntryList(xmlCatalogEntryPtr ret);
 
 /**
  * xmlFreeCatalogEntry:
- * @ret:  a Catalog entry
+ * @payload:  a Catalog entry
  *
  * Free the memory allocated to a Catalog entry
  */
 static void
-xmlFreeCatalogEntry(xmlCatalogEntryPtr ret) {
+xmlFreeCatalogEntry(void *payload, const xmlChar *name ATTRIBUTE_UNUSED) {
+    xmlCatalogEntryPtr ret = (xmlCatalogEntryPtr) payload;
     if (ret == NULL)
 	return;
     /*
@@ -375,20 +376,22 @@ xmlFreeCatalogEntryList(xmlCatalogEntryPtr ret) {
 
     while (ret != NULL) {
 	next = ret->next;
-	xmlFreeCatalogEntry(ret);
+	xmlFreeCatalogEntry(ret, NULL);
 	ret = next;
     }
 }
 
 /**
  * xmlFreeCatalogHashEntryList:
- * @ret:  a Catalog entry list
+ * @payload:  a Catalog entry list
  *
  * Free the memory allocated to list of Catalog entries from the
  * catalog file hash.
  */
 static void
-xmlFreeCatalogHashEntryList(xmlCatalogEntryPtr catal) {
+xmlFreeCatalogHashEntryList(void *payload,
+                            const xmlChar *name ATTRIBUTE_UNUSED) {
+    xmlCatalogEntryPtr catal = (xmlCatalogEntryPtr) payload;
     xmlCatalogEntryPtr children, next;
 
     if (catal == NULL)
@@ -399,11 +402,11 @@ xmlFreeCatalogHashEntryList(xmlCatalogEntryPtr catal) {
 	next = children->next;
 	children->dealloc = 0;
 	children->children = NULL;
-	xmlFreeCatalogEntry(children);
+	xmlFreeCatalogEntry(children, NULL);
 	children = next;
     }
     catal->dealloc = 0;
-    xmlFreeCatalogEntry(catal);
+    xmlFreeCatalogEntry(catal, NULL);
 }
 
 /**
@@ -448,8 +451,7 @@ xmlFreeCatalog(xmlCatalogPtr catal) {
     if (catal->xml != NULL)
 	xmlFreeCatalogEntryList(catal->xml);
     if (catal->sgml != NULL)
-	xmlHashFree(catal->sgml,
-		(xmlHashDeallocator) xmlFreeCatalogEntry);
+	xmlHashFree(catal->sgml, xmlFreeCatalogEntry);
     xmlFree(catal);
 }
 
@@ -468,7 +470,10 @@ xmlFreeCatalog(xmlCatalogPtr catal) {
  * Serialize an SGML Catalog entry
  */
 static void
-xmlCatalogDumpEntry(xmlCatalogEntryPtr entry, FILE *out) {
+xmlCatalogDumpEntry(void *payload, void *data,
+                    const xmlChar *name ATTRIBUTE_UNUSED) {
+    xmlCatalogEntryPtr entry = (xmlCatalogEntryPtr) payload;
+    FILE *out = (FILE *) data;
     if ((entry == NULL) || (out == NULL))
 	return;
     switch (entry->type) {
@@ -731,7 +736,10 @@ BAD_CAST "http://www.oasis-open.org/committees/entity/release/1.0/catalog.dtd");
  * Convert one entry from the catalog
  */
 static void
-xmlCatalogConvertEntry(xmlCatalogEntryPtr entry, xmlCatalogPtr catal) {
+xmlCatalogConvertEntry(void *payload, void *data,
+                       const xmlChar *name ATTRIBUTE_UNUSED) {
+    xmlCatalogEntryPtr entry = (xmlCatalogEntryPtr) payload;
+    xmlCatalogPtr catal = (xmlCatalogPtr) data;
     if ((entry == NULL) || (catal == NULL) || (catal->sgml == NULL) ||
 	(catal->xml == NULL))
 	return;
@@ -764,8 +772,7 @@ xmlCatalogConvertEntry(xmlCatalogEntryPtr entry, xmlCatalogPtr catal) {
 	    entry->type = XML_CATA_CATALOG;
 	    break;
 	default:
-	    xmlHashRemoveEntry(catal->sgml, entry->name,
-		               (xmlHashDeallocator) xmlFreeCatalogEntry);
+	    xmlHashRemoveEntry(catal->sgml, entry->name, xmlFreeCatalogEntry);
 	    return;
     }
     /*
@@ -805,9 +812,7 @@ xmlConvertSGMLCatalog(xmlCatalogPtr catal) {
 	xmlGenericError(xmlGenericErrorContext,
 		"Converting SGML catalog to XML\n");
     }
-    xmlHashScan(catal->sgml,
-		(xmlHashScanner) xmlCatalogConvertEntry,
-		&catal);
+    xmlHashScan(catal->sgml, xmlCatalogConvertEntry, &catal);
     return(0);
 }
 
@@ -2408,6 +2413,7 @@ xmlParseSGMLCatalog(xmlCatalogPtr catal, const xmlChar *value,
 		case SGML_CATA_ENTITY:
 		    if (*cur == '%')
 			type = SGML_CATA_PENTITY;
+                    /* Falls through. */
 		case SGML_CATA_PENTITY:
 		case SGML_CATA_DOCTYPE:
 		case SGML_CATA_LINKTYPE:
@@ -2497,7 +2503,7 @@ xmlParseSGMLCatalog(xmlCatalogPtr catal, const xmlChar *value,
 			                       NULL, XML_CATA_PREFER_NONE, NULL);
 		    res = xmlHashAddEntry(catal->sgml, name, entry);
 		    if (res < 0) {
-			xmlFreeCatalogEntry(entry);
+			xmlFreeCatalogEntry(entry, NULL);
 		    }
 		    xmlFree(filename);
 		}
@@ -2510,7 +2516,7 @@ xmlParseSGMLCatalog(xmlCatalogPtr catal, const xmlChar *value,
 			                       XML_CATA_PREFER_NONE, NULL);
 		    res = xmlHashAddEntry(catal->sgml, sysid, entry);
 		    if (res < 0) {
-			xmlFreeCatalogEntry(entry);
+			xmlFreeCatalogEntry(entry, NULL);
 		    }
 		} else {
 		    xmlChar *filename;
@@ -2948,8 +2954,7 @@ xmlACatalogDump(xmlCatalogPtr catal, FILE *out) {
     if (catal->type == XML_XML_CATALOG_TYPE) {
 	xmlDumpXMLCatalog(out, catal->xml);
     } else {
-	xmlHashScan(catal->sgml,
-		    (xmlHashScanner) xmlCatalogDumpEntry, out);
+	xmlHashScan(catal->sgml, xmlCatalogDumpEntry, out);
     }
 }
 #endif /* LIBXML_OUTPUT_ENABLED */
@@ -3013,8 +3018,7 @@ xmlACatalogRemove(xmlCatalogPtr catal, const xmlChar *value) {
     if (catal->type == XML_XML_CATALOG_TYPE) {
 	res = xmlDelXMLCatalog(catal->xml, value);
     } else {
-	res = xmlHashRemoveEntry(catal->sgml, value,
-		(xmlHashDeallocator) xmlFreeCatalogEntry);
+	res = xmlHashRemoveEntry(catal->sgml, value, xmlFreeCatalogEntry);
 	if (res == 0)
 	    res = 1;
     }
@@ -3295,8 +3299,7 @@ xmlCatalogCleanup(void) {
 	xmlGenericError(xmlGenericErrorContext,
 		"Catalogs cleanup\n");
     if (xmlCatalogXMLFiles != NULL)
-	xmlHashFree(xmlCatalogXMLFiles,
-		    (xmlHashDeallocator)xmlFreeCatalogHashEntryList);
+	xmlHashFree(xmlCatalogXMLFiles, xmlFreeCatalogHashEntryList);
     xmlCatalogXMLFiles = NULL;
     if (xmlDefaultCatalog != NULL)
 	xmlFreeCatalog(xmlDefaultCatalog);
