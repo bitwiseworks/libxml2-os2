@@ -812,12 +812,22 @@ xmlFileOpen_real (const char *filename) {
     if (!xmlStrncasecmp(BAD_CAST filename, BAD_CAST "file://localhost/", 17)) {
 #if defined (_WIN32) || defined (__DJGPP__) && !defined(__CYGWIN__)
 	path = &filename[17];
+#elif defined(__OS2__)
+        if (filename[18] == ':')
+		path = &filename[17];
+	else
+		path = &filename[16];
 #else
 	path = &filename[16];
 #endif
     } else if (!xmlStrncasecmp(BAD_CAST filename, BAD_CAST "file:///", 8)) {
 #if defined (_WIN32) || defined (__DJGPP__) && !defined(__CYGWIN__)
 	path = &filename[8];
+#elif defined(__OS2__)
+        if (filename[9] == ':')
+		path = &filename[8];
+	else
+		path = &filename[7];
 #else
 	path = &filename[7];
 #endif
@@ -825,6 +835,11 @@ xmlFileOpen_real (const char *filename) {
         /* lots of generators seems to lazy to read RFC 1738 */
 #if defined (_WIN32) || defined (__DJGPP__) && !defined(__CYGWIN__)
 	path = &filename[6];
+#elif defined(__OS2__)
+        if (filename[7] == ':')
+		path = &filename[6];
+	else
+		path = &filename[5];
 #else
 	path = &filename[5];
 #endif
@@ -896,12 +911,22 @@ xmlFileOpenW (const char *filename) {
     if (!xmlStrncasecmp(BAD_CAST filename, BAD_CAST "file://localhost/", 17))
 #if defined (_WIN32) || defined (__DJGPP__) && !defined(__CYGWIN__)
 	path = &filename[17];
+#elif defined(__OS2__)
+        if (filename[18] == ':')
+		path = &filename[17];
+	else
+		path = &filename[16];
 #else
 	path = &filename[16];
 #endif
     else if (!xmlStrncasecmp(BAD_CAST filename, BAD_CAST "file:///", 8)) {
 #if defined (_WIN32) || defined (__DJGPP__) && !defined(__CYGWIN__)
 	path = &filename[8];
+#elif defined(__OS2__)
+        if (filename[9] == ':')
+		path = &filename[8];
+	else
+		path = &filename[7];
 #else
 	path = &filename[7];
 #endif
@@ -1086,12 +1111,22 @@ xmlGzfileOpen_real (const char *filename) {
     if (!xmlStrncasecmp(BAD_CAST filename, BAD_CAST "file://localhost/", 17))
 #if defined (_WIN32) || defined (__DJGPP__) && !defined(__CYGWIN__)
 	path = &filename[17];
+#elif defined(__OS2__)
+        if (filename[18] == ':')
+		path = &filename[17];
+	else
+		path = &filename[16];
 #else
 	path = &filename[16];
 #endif
     else if (!xmlStrncasecmp(BAD_CAST filename, BAD_CAST "file:///", 8)) {
 #if defined (_WIN32) || defined (__DJGPP__) && !defined(__CYGWIN__)
 	path = &filename[8];
+#elif defined(__OS2__)
+        if (filename[9] == ':')
+		path = &filename[8];
+	else
+		path = &filename[7];
 #else
 	path = &filename[7];
 #endif
@@ -1165,12 +1200,22 @@ xmlGzfileOpenW (const char *filename, int compression) {
     if (!xmlStrncasecmp(BAD_CAST filename, BAD_CAST "file://localhost/", 17))
 #if defined (_WIN32) || defined (__DJGPP__) && !defined(__CYGWIN__)
 	path = &filename[17];
+#elif defined(__OS2__)
+        if (filename[18] == ':')
+		path = &filename[17];
+	else
+		path = &filename[16];
 #else
 	path = &filename[16];
 #endif
     else if (!xmlStrncasecmp(BAD_CAST filename, BAD_CAST "file:///", 8)) {
 #if defined (_WIN32) || defined (__DJGPP__) && !defined(__CYGWIN__)
 	path = &filename[8];
+#elif defined(__OS2__)
+        if (filename[9] == ':')
+		path = &filename[8];
+	else
+		path = &filename[7];
 #else
 	path = &filename[7];
 #endif
@@ -1285,12 +1330,33 @@ xmlXzfileOpen_real (const char *filename) {
     }
 
     if (!xmlStrncasecmp(BAD_CAST filename, BAD_CAST "file://localhost/", 17)) {
+#if defined(__OS2__)
+        if (filename[18] == ':')
+		path = &filename[17];
+	else
+		path = &filename[16];
+#else
 	path = &filename[16];
+#endif
     } else if (!xmlStrncasecmp(BAD_CAST filename, BAD_CAST "file:///", 8)) {
+#if defined(__OS2__)
+        if (filename[9] == ':')
+		path = &filename[8];
+	else
+		path = &filename[7];
+#else
 	path = &filename[7];
+#endif
     } else if (!xmlStrncasecmp(BAD_CAST filename, BAD_CAST "file:/", 6)) {
         /* lots of generators seems to lazy to read RFC 1738 */
+#if defined(__OS2__)
+        if (filename[7] == ':')
+		path = &filename[6];
+	else
+		path = &filename[5];
+#else
 	path = &filename[5];
+#endif
     } else
 	path = filename;
 
@@ -3840,12 +3906,22 @@ static int xmlNoNetExists(const char *URL) {
     if (!xmlStrncasecmp(BAD_CAST URL, BAD_CAST "file://localhost/", 17))
 #if defined (_WIN32) || defined (__DJGPP__) && !defined(__CYGWIN__)
 	path = &URL[17];
+#elif defined(__OS2__)
+        if (URL[18] == ':')
+		path = &URL[17];
+	else
+		path = &URL[16];
 #else
 	path = &URL[16];
 #endif
     else if (!xmlStrncasecmp(BAD_CAST URL, BAD_CAST "file:///", 8)) {
 #if defined (_WIN32) || defined (__DJGPP__) && !defined(__CYGWIN__)
 	path = &URL[8];
+#elif defined(__OS2__)
+        if (URL[9] == ':')
+		path = &URL[8];
+	else
+		path = &URL[7];
 #else
 	path = &URL[7];
 #endif

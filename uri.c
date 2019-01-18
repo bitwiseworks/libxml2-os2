@@ -2392,7 +2392,7 @@ xmlCanonicPath(const xmlChar *path)
  * For Windows implementations, additional work needs to be done to
  * replace backslashes in pathnames with "forward slashes"
  */
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if defined(_WIN32) && !defined(__CYGWIN__) || defined(__OS2__)
     int len = 0;
     char *p = NULL;
 #endif
@@ -2403,7 +2403,7 @@ xmlCanonicPath(const xmlChar *path)
     if (path == NULL)
 	return(NULL);
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(__OS2__)
     /*
      * We must not change the backslashes to slashes if the the path
      * starts with \\?\
@@ -2464,7 +2464,7 @@ xmlCanonicPath(const xmlChar *path)
 
 path_processing:
 /* For Windows implementations, replace backslashes with 'forward slashes' */
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if defined(_WIN32) && !defined(__CYGWIN__) || defined(__OS2__)
     /*
      * Create a URI structure
      */
@@ -2543,7 +2543,7 @@ xmlPathToURI(const xmlChar *path)
     cal = xmlCanonicPath(path);
     if (cal == NULL)
         return(NULL);
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if defined(_WIN32) && !defined(__CYGWIN__) || defined(__OS2__)
     /* xmlCanonicPath can return an URI on Windows (is that the intended behaviour?)
        If 'cal' is a valid URI allready then we are done here, as continuing would make
        it invalid. */
