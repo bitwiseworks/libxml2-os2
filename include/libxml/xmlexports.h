@@ -152,6 +152,27 @@
   #define XMLCDECL __cdecl
 #endif
 
+/* OS/2 with the OpenWatcom compiler */
+#if defined(__OS2__) && defined(__WATCOMC__)
+  #undef XMLPUBFUN
+  #undef XMLPUBVAR
+  #undef XMLCALL
+  #undef XMLCDECL
+  #if defined(IN_LIBXML) && !defined(LIBXML_STATIC)
+    #define XMLPUBFUN __declspec(dllexport)
+    #define XMLPUBVAR __declspec(dllexport)
+  #else
+    #define XMLPUBFUN
+    #if !defined(LIBXML_STATIC)
+      #define XMLPUBVAR __declspec(dllimport) extern
+    #else
+      #define XMLPUBVAR
+    #endif
+  #endif
+  #define XMLCALL __cdecl
+  #define XMLCDECL __cdecl
+#endif
+
 /* Compatibility */
 #if !defined(LIBXML_DLL_IMPORT)
 #define LIBXML_DLL_IMPORT XMLPUBVAR
