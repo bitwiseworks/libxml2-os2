@@ -248,6 +248,13 @@ static int
 xmlModulePlatformSymbol(void *handle, const char *name, void **symbol)
 {
     *symbol = dlsym(handle, name);
+#ifdef __OS2__
+    if (dlerror() != NULL) {
+        char name_uscore[256] = {0};
+        snprintf(name_uscore, sizeof(name_uscore), "_%s", name);
+        *symbol = dlsym(handle, name_uscore);
+    }
+#endif
     if (dlerror() != NULL) {
 	return -1;
     }
