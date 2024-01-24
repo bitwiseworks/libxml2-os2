@@ -6,18 +6,14 @@
  * daniel@veillard.com
  */
 
-#include "libxml.h"
+#include "config.h"
 #include <stdio.h>
+#include <libxml/xmlversion.h>
 
-#ifdef LIBXML_XPATH_ENABLED
+#if defined(LIBXML_XPATH_ENABLED) && defined(LIBXML_VALID_ENABLED)
 
-#if !defined(_WIN32) || defined(__CYGWIN__)
-#include <unistd.h>
-#endif
 #include <string.h>
-#include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
 
 #include <libxml/parser.h>
 #include <libxml/parserInternals.h>
@@ -53,7 +49,7 @@ static int checkTestFile(const char *filename) {
     if (stat(filename, &buf) == -1)
         return(0);
 
-#if defined(_WIN32) && !defined(__CYGWIN__)
+#if defined(_WIN32)
     if (!(buf.st_mode & _S_IFREG))
         return(0);
 #else
@@ -126,7 +122,7 @@ static void test_log(const char *msg, ...) {
 }
 
 static void
-testErrorHandler(void *userData ATTRIBUTE_UNUSED, xmlErrorPtr error) {
+testErrorHandler(void *userData ATTRIBUTE_UNUSED, const xmlError *error) {
     int res;
 
     if (testErrorsSize >= 32768)
@@ -153,9 +149,6 @@ static xmlXPathContextPtr ctxtXPath;
 
 static void
 initializeLibxml2(void) {
-    xmlGetWarningsDefaultValue = 0;
-    xmlPedanticParserDefault(0);
-
     xmlMemSetup(xmlMemFree, xmlMemMalloc, xmlMemRealloc, xmlMemoryStrdup);
     xmlInitParser();
     xmlSetExternalEntityLoader(testExternalEntityLoader);
@@ -257,8 +250,10 @@ xmlconfTestNotNSWF(const char *id, const char *filename, int options) {
         nb_errors++;
 	ret = 0;
     } else {
-	if ((xmlLastError.code == XML_ERR_OK) ||
-	    (xmlLastError.domain != XML_FROM_NAMESPACE)) {
+        const xmlError *error = xmlGetLastError();
+
+	if ((error->code == XML_ERR_OK) ||
+	    (error->domain != XML_FROM_NAMESPACE)) {
 	    test_log("test %s : %s failed to detect namespace error\n",
 		     id, filename);
 	    nb_errors++;
@@ -507,7 +502,7 @@ xmlconfInfo(void) {
     fprintf(stderr, "  you need to fetch and extract the\n");
     fprintf(stderr, "  latest XML Conformance Test Suites\n");
     fprintf(stderr, "  http://www.w3.org/XML/Test/xmlts20080827.tar.gz\n");
-    fprintf(stderr, "  see http://www.w3.org/XML/Test/ for informations\n");
+    fprintf(stderr, "  see http://www.w3.org/XML/Test/ for information\n");
 }
 
 static int
@@ -591,7 +586,6 @@ main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
     }
     xmlXPathFreeContext(ctxtXPath);
     xmlCleanupParser();
-    xmlMemoryDump();
 
     if (logfile != NULL)
         fclose(logfile);
@@ -599,9 +593,9 @@ main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
 }
 
 #else /* ! LIBXML_XPATH_ENABLED */
-#include <stdio.h>
 int
-main(int argc, char **argv) {
-    fprintf(stderr, "%s need XPath support\n", argv[0]);
+main(int argc ATTRIBUTE_UNUSED, char **argv) {
+    fprintf(stderr, "%s need XPath and validation support\n", argv[0]);
+    return(0);
 }
 #endif

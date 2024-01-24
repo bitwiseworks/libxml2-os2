@@ -9,7 +9,7 @@
  *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
- * MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE AUTHORS AND
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE AUTHORS AND
  * CONTRIBUTORS ACCEPT NO RESPONSIBILITY IN ANY CONCEIVABLE MANNER.
  *
  * Author: Gary.Pennington@uk.sun.com
@@ -21,8 +21,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <libxml/xmlmemory.h>
+#include <libxml/xmlerror.h>
 #include <libxml/list.h>
-#include <libxml/globals.h>
 
 /*
  * Type definition are kept internal
@@ -775,5 +775,3 @@ xmlListCopy(xmlListPtr cur, const xmlListPtr old)
 }
 /* xmlListUnique() */
 /* xmlListSwap */
-#define bottom_list
-#include "elfgcchack.h"

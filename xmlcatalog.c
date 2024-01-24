@@ -11,10 +11,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
-
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
 
 #ifdef HAVE_LIBREADLINE
 #include <readline/readline.h>
@@ -27,7 +24,6 @@
 #include <libxml/uri.h>
 #include <libxml/catalog.h>
 #include <libxml/parser.h>
-#include <libxml/globals.h>
 
 #if defined(LIBXML_CATALOG_ENABLED) && defined(LIBXML_OUTPUT_ENABLED)
 static int shell = 0;
@@ -43,7 +39,7 @@ static char *filename = NULL;
 
 
 #ifndef XML_SGML_DEFAULT_CATALOG
-#define XML_SGML_DEFAULT_CATALOG "/etc/sgml/catalog"
+#define XML_SGML_DEFAULT_CATALOG SYSCONFDIR "/sgml/catalog"
 #endif
 
 /************************************************************************
@@ -214,32 +210,17 @@ static void usershell(void) {
 		}
 	    }
 	} else if (!strcmp(command, "add")) {
-	    if (sgml) {
-		if ((nbargs != 3) && (nbargs != 2)) {
-		    printf("add requires 2 or 3 arguments\n");
-		} else {
-		    if (argv[2] == NULL)
-			ret = xmlCatalogAdd(BAD_CAST argv[0], NULL,
-					    BAD_CAST argv[1]);
-		    else
-			ret = xmlCatalogAdd(BAD_CAST argv[0], BAD_CAST argv[1],
-					    BAD_CAST argv[2]);
-		    if (ret != 0)
-			printf("add command failed\n");
-		}
+	    if ((nbargs != 3) && (nbargs != 2)) {
+		printf("add requires 2 or 3 arguments\n");
 	    } else {
-		if ((nbargs != 3) && (nbargs != 2)) {
-		    printf("add requires 2 or 3 arguments\n");
-		} else {
-		    if (argv[2] == NULL)
-			ret = xmlCatalogAdd(BAD_CAST argv[0], NULL,
-					    BAD_CAST argv[1]);
-		    else
-			ret = xmlCatalogAdd(BAD_CAST argv[0], BAD_CAST argv[1],
-					    BAD_CAST argv[2]);
-		    if (ret != 0)
-			printf("add command failed\n");
-		}
+		if (argv[2] == NULL)
+		ret = xmlCatalogAdd(BAD_CAST argv[0], NULL,
+				    BAD_CAST argv[1]);
+		else
+		    ret = xmlCatalogAdd(BAD_CAST argv[0], BAD_CAST argv[1],
+					BAD_CAST argv[2]);
+		if (ret != 0)
+		    printf("add command failed\n");
 	    }
 	} else if (!strcmp(command, "del")) {
 	    if (nbargs != 1) {
@@ -325,7 +306,7 @@ Usage : %s [options] catalogfile entities...\n\
 \t         used with --add or --del, it saves the catalog changes\n\
 \t         and with --sgml it automatically updates the super catalog\n\
 \t--no-super-update: do not update the SGML super catalog\n\
-\t-v --verbose : provide debug informations\n");
+\t-v --verbose : provide debug information\n");
 }
 int main(int argc, char **argv) {
     int i;
@@ -527,6 +508,9 @@ int main(int argc, char **argv) {
 		    xmlACatalogDump(catal, stdout);
 		}
 		i += 2;
+
+                xmlFreeCatalog(catal);
+                xmlFreeCatalog(super);
 	    } else {
 		if ((!strcmp(argv[i], "-add")) ||
 		    (!strcmp(argv[i], "--add"))) {
@@ -613,7 +597,6 @@ int main(int argc, char **argv) {
      * Cleanup and check for memory leaks
      */
     xmlCleanupParser();
-    xmlMemoryDump();
     return(exit_value);
 }
 #else

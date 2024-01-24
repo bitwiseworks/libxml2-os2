@@ -2,7 +2,7 @@
  * section: xmlReader
  * synopsis: Parse an XML file with an xmlReader
  * purpose: Demonstrate the use of xmlReaderForFile() to parse an XML file
- *          and dump the informations about the nodes found in the process.
+ *          and dump the information about the nodes found in the process.
  *          (Note that the XMLReader functions require libxml2 version later
  *          than 2.6.)
  * usage: reader1 <filename>
@@ -88,20 +88,12 @@ int main(int argc, char **argv) {
 
     streamFile(argv[1]);
 
-    /*
-     * Cleanup function for the XML library.
-     */
-    xmlCleanupParser();
-    /*
-     * this is to debug memory for regression tests
-     */
-    xmlMemoryDump();
     return(0);
 }
 
 #else
 int main(void) {
     fprintf(stderr, "XInclude support not compiled in\n");
-    exit(1);
+    return(0);
 }
 #endif

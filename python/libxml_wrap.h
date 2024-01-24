@@ -18,6 +18,8 @@
 #include <libxml/xmlregexp.h>
 #include <libxml/xmlautomata.h>
 #include <libxml/xmlreader.h>
+#include <libxml/globals.h>
+#include <libxml/xmlsave.h>
 #ifdef LIBXML_SCHEMAS_ENABLED
 #include <libxml/relaxng.h>
 #include <libxml/xmlschemas.h>
@@ -58,6 +60,22 @@
 #endif /* ATTRIBUTE_UNUSED */
 #else
 #define ATTRIBUTE_UNUSED
+#endif
+
+/*
+ * Macros to ignore deprecation warnings
+ */
+#if defined(__clang__) || \
+    (defined(__GNUC__) && (__GNUC__ * 100 + __GNUC_MINOR__ >= 406))
+#define XML_IGNORE_DEPRECATION_WARNINGS \
+    _Pragma("GCC diagnostic push") \
+    _Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
+#elif defined (_MSC_VER) && (_MSC_VER >= 1400)
+#define XML_IGNORE_DEPRECATION_WARNINGS \
+    __pragma(warning(push)) \
+    __pragma(warning(disable : 4996))
+#else
+#define XML_IGNORE_DEPRECATION_WARNINGS
 #endif
 
 #define PyxmlNode_Get(v) (((v) == Py_None) ? NULL : \
@@ -272,8 +290,10 @@ PyObject * libxml_xmlSchemaPtrWrap(xmlSchemaPtr ctxt);
 PyObject * libxml_xmlSchemaParserCtxtPtrWrap(xmlSchemaParserCtxtPtr ctxt);
 PyObject * libxml_xmlSchemaValidCtxtPtrWrap(xmlSchemaValidCtxtPtr valid);
 #endif /* LIBXML_SCHEMAS_ENABLED */
-PyObject * libxml_xmlErrorPtrWrap(xmlErrorPtr error);
+PyObject * libxml_xmlErrorPtrWrap(const xmlError *error);
 PyObject * libxml_xmlSchemaSetValidErrors(PyObject * self, PyObject * args);
 PyObject * libxml_xmlRegisterInputCallback(PyObject *self, PyObject *args);
 PyObject * libxml_xmlUnregisterInputCallback(PyObject *self, PyObject *args);
 PyObject * libxml_xmlNodeRemoveNsDef(PyObject * self, PyObject * args);
+
+int libxml_deprecationWarning(const char *func);

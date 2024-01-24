@@ -12,22 +12,19 @@
 #define IN_LIBXML
 #include "libxml.h"
 #ifdef LIBXML_C14N_ENABLED
-#ifdef LIBXML_OUTPUT_ENABLED
 
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
 #include <string.h>
 
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <libxml/uri.h>
 #include <libxml/xmlerror.h>
-#include <libxml/globals.h>
 #include <libxml/xpathInternals.h>
 #include <libxml/c14n.h>
 
-#include "buf.h"
+#include "private/buf.h"
+#include "private/error.h"
 
 /************************************************************************
  *									*
@@ -132,7 +129,7 @@ static xmlChar *xmlC11NNormalizeString(const xmlChar * input,
 
 /**
  * xmlC14NErrMemory:
- * @extra:  extra informations
+ * @extra:  extra information
  *
  * Handle a redefinition of memory error
  */
@@ -147,7 +144,7 @@ xmlC14NErrMemory(const char *extra)
 
 /**
  * xmlC14NErrParam:
- * @extra:  extra informations
+ * @extra:  extra information
  *
  * Handle a redefinition of param error
  */
@@ -162,7 +159,7 @@ xmlC14NErrParam(const char *extra)
 
 /**
  * xmlC14NErrInternal:
- * @extra:  extra informations
+ * @extra:  extra information
  *
  * Handle a redefinition of internal error
  */
@@ -177,7 +174,7 @@ xmlC14NErrInternal(const char *extra)
 
 /**
  * xmlC14NErrInvalidNode:
- * @extra:  extra informations
+ * @extra:  extra information
  *
  * Handle a redefinition of invalid node error
  */
@@ -192,7 +189,7 @@ xmlC14NErrInvalidNode(const char *node_type, const char *extra)
 
 /**
  * xmlC14NErrUnknownNode:
- * @extra:  extra informations
+ * @extra:  extra information
  *
  * Handle a redefinition of unknown node error
  */
@@ -207,7 +204,7 @@ xmlC14NErrUnknownNode(int node_type, const char *extra)
 
 /**
  * xmlC14NErrRelativeNamespace:
- * @extra:  extra informations
+ * @extra:  extra information
  *
  * Handle a redefinition of relative namespace error
  */
@@ -228,7 +225,7 @@ xmlC14NErrRelativeNamespace(const char *ns_uri)
  * @node:  the context node
  * @error:  the error code
  * @msg:  the message
- * @extra:  extra informations
+ * @extra:  extra information
  *
  * Handle a redefinition of attribute error
  */
@@ -288,7 +285,7 @@ xmlC14NVisibleNsStackCreate(void) {
         xmlC14NErrMemory("creating namespaces stack");
 	return(NULL);
     }
-    memset(ret, 0 , (size_t) sizeof(xmlC14NVisibleNsStack));
+    memset(ret, 0, sizeof(xmlC14NVisibleNsStack));
     return(ret);
 }
 
@@ -1659,9 +1656,6 @@ xmlC14NProcessNode(xmlC14NCtxPtr ctx, xmlNodePtr cur)
             break;
         case XML_DOCUMENT_NODE:
         case XML_DOCUMENT_FRAG_NODE:   /* should be processed as document? */
-#ifdef LIBXML_DOCB_ENABLED
-        case XML_DOCB_DOCUMENT_NODE:   /* should be processed as document? */
-#endif
 #ifdef LIBXML_HTML_ENABLED
         case XML_HTML_DOCUMENT_NODE:   /* should be processed as document? */
 #endif
@@ -2033,13 +2027,13 @@ xmlC14NDocDumpMemory(xmlDocPtr doc, xmlNodeSetPtr nodes,
     }
 
     ret = xmlBufUse(buf->buffer);
-    if (ret > 0) {
+    if (ret >= 0) {
         *doc_txt_ptr = xmlStrndup(xmlBufContent(buf->buffer), ret);
     }
     (void) xmlOutputBufferClose(buf);
 
-    if ((*doc_txt_ptr == NULL) && (ret > 0)) {
-        xmlC14NErrMemory("coping canonicalized document");
+    if ((*doc_txt_ptr == NULL) && (ret >= 0)) {
+        xmlC14NErrMemory("copying canonicalized document");
         return (-1);
     }
     return (ret);
@@ -2120,7 +2114,7 @@ xmlC14NDocSave(xmlDocPtr doc, xmlNodeSetPtr nodes,
 #define growBufferReentrant() {						\
     buffer_size *= 2;							\
     buffer = (xmlChar *)						\
-		xmlRealloc(buffer, buffer_size * sizeof(xmlChar));	\
+		xmlRealloc(buffer, buffer_size);			\
     if (buffer == NULL) {						\
 	xmlC14NErrMemory("growing buffer");				\
 	return(NULL);							\
@@ -2155,7 +2149,7 @@ xmlC11NNormalizeString(const xmlChar * input,
      * allocate an translation buffer.
      */
     buffer_size = 1000;
-    buffer = (xmlChar *) xmlMallocAtomic(buffer_size * sizeof(xmlChar));
+    buffer = (xmlChar *) xmlMallocAtomic(buffer_size);
     if (buffer == NULL) {
 	xmlC14NErrMemory("allocating buffer");
         return (NULL);
@@ -2228,7 +2222,5 @@ xmlC11NNormalizeString(const xmlChar * input,
     *out = 0;
     return (buffer);
 }
-#endif /* LIBXML_OUTPUT_ENABLED */
-#define bottom_c14n
-#include "elfgcchack.h"
+
 #endif /* LIBXML_C14N_ENABLED */

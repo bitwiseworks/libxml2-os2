@@ -1,8 +1,9 @@
-#!/usr/bin/python -u
+#!/usr/bin/env python3
 #
 # This tests custom input callbacks
 #
 import sys
+import setup_test
 import libxml2
 try:
     import StringIO
