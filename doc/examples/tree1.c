@@ -78,17 +78,11 @@ main(int argc, char **argv)
     /*free the document */
     xmlFreeDoc(doc);
 
-    /*
-     *Free the global variables that may
-     *have been allocated by the parser.
-     */
-    xmlCleanupParser();
-
     return 0;
 }
 #else
 int main(void) {
     fprintf(stderr, "Tree support not compiled in\n");
-    exit(1);
+    return 0;
 }
 #endif

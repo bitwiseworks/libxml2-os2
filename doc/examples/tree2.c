@@ -36,7 +36,7 @@ main(int argc, char **argv)
      * Creates a new document, a node and set it as a root node
      */
     doc = xmlNewDoc(BAD_CAST "1.0");
-    root_node = xmlNewNode(NULL, BAD_CAST "root");
+    root_node = xmlNewDocNode(doc, NULL, BAD_CAST "root", NULL);
     xmlDocSetRootElement(doc, root_node);
 
     /*
@@ -70,8 +70,8 @@ main(int argc, char **argv)
      * creates a node and a text node separately. They are "attached"
      * by xmlAddChild() 
      */
-    node = xmlNewNode(NULL, BAD_CAST "node4");
-    node1 = xmlNewText(BAD_CAST
+    node = xmlNewDocNode(doc, NULL, BAD_CAST "node4", NULL);
+    node1 = xmlNewDocText(doc, BAD_CAST
                    "other way to create content (which is also a node)");
     xmlAddChild(node, node1);
     xmlAddChild(root_node, node);
@@ -80,10 +80,10 @@ main(int argc, char **argv)
      * A simple loop that "automates" nodes creation 
      */
     for (i = 5; i < 7; i++) {
-        sprintf(buff, "node%d", i);
+        snprintf(buff, sizeof(buff), "node%d", i);
         node = xmlNewChild(root_node, NULL, BAD_CAST buff, NULL);
         for (j = 1; j < 4; j++) {
-            sprintf(buff, "node%d%d", i, j);
+            snprintf(buff, sizeof(buff), "node%d%d", i, j);
             node1 = xmlNewChild(node, NULL, BAD_CAST buff, NULL);
             xmlNewProp(node1, BAD_CAST "odd", BAD_CAST((j % 2) ? "no" : "yes"));
         }
@@ -97,21 +97,11 @@ main(int argc, char **argv)
     /*free the document */
     xmlFreeDoc(doc);
 
-    /*
-     *Free the global variables that may
-     *have been allocated by the parser.
-     */
-    xmlCleanupParser();
-
-    /*
-     * this is to debug memory for regression tests
-     */
-    xmlMemoryDump();
     return(0);
 }
 #else
 int main(void) {
     fprintf(stderr, "tree support not compiled in\n");
-    exit(1);
+    return(0);
 }
 #endif

@@ -47,13 +47,6 @@ main(int argc, char **argv) {
 	return(-1);
     }
 
-    /* Shutdown libxml */
-    xmlCleanupParser();
-    
-    /*
-     * this is to debug memory for regression tests
-     */
-    xmlMemoryDump();
     return 0;
 }
 
@@ -185,6 +178,6 @@ update_xpath_nodes(xmlNodeSetPtr nodes, const xmlChar* value) {
 #else
 int main(void) {
     fprintf(stderr, "XPath support not compiled in\n");
-    exit(1);
+    return 0;
 }
 #endif

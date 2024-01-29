@@ -15,6 +15,7 @@
 #include <string.h>
 #include <libxml/encoding.h>
 #include <libxml/xmlwriter.h>
+#include <libxml/parser.h>
 
 #if defined(LIBXML_WRITER_ENABLED) && defined(LIBXML_OUTPUT_ENABLED)
 
@@ -48,14 +49,6 @@ main(void)
     /* next, the tree version */
     testXmlwriterTree("writer4.tmp");
 
-    /*
-     * Cleanup function for the XML library.
-     */
-    xmlCleanupParser();
-    /*
-     * this is to debug memory for regression tests
-     */
-    xmlMemoryDump();
     return 0;
 }
 
@@ -89,7 +82,7 @@ testXmlwriterFilename(const char *uri)
         return;
     }
 
-    /* Start an element named "EXAMPLE". Since thist is the first
+    /* Start an element named "EXAMPLE". Since this is the first
      * element, this will be the root element of the document. */
     rc = xmlTextWriterStartElement(writer, BAD_CAST "EXAMPLE");
     if (rc < 0) {
@@ -368,7 +361,7 @@ testXmlwriterMemory(const char *file)
         return;
     }
 
-    /* Start an element named "EXAMPLE". Since thist is the first
+    /* Start an element named "EXAMPLE". Since this is the first
      * element, this will be the root element of the document. */
     rc = xmlTextWriterStartElement(writer, BAD_CAST "EXAMPLE");
     if (rc < 0) {
@@ -644,7 +637,7 @@ testXmlwriterDoc(const char *file)
         return;
     }
 
-    /* Start an element named "EXAMPLE". Since thist is the first
+    /* Start an element named "EXAMPLE". Since this is the first
      * element, this will be the root element of the document. */
     rc = xmlTextWriterStartElement(writer, BAD_CAST "EXAMPLE");
     if (rc < 0) {
@@ -1193,6 +1186,6 @@ ConvertInput(const char *in, const char *encoding)
 #else
 int main(void) {
     fprintf(stderr, "Writer or output support not compiled in\n");
-    exit(1);
+    return 0;
 }
 #endif

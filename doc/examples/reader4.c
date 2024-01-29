@@ -103,20 +103,12 @@ int main(int argc, char **argv) {
      */
     xmlFreeTextReader(readerPtr);
 
-    /*
-     * Cleanup function for the XML library.
-     */
-    xmlCleanupParser();
-    /*
-     * this is to debug memory for regression tests
-     */
-    xmlMemoryDump();
     return(0);
 }
 
 #else
 int main(void) {
     fprintf(stderr, "xmlReader support not compiled in\n");
-    exit(1);
+    return(0);
 }
 #endif

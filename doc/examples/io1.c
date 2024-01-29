@@ -12,6 +12,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -148,19 +149,11 @@ int main(void) {
      */
     xmlFreeDoc(doc);
 
-    /*
-     * Cleanup function for the XML library.
-     */
-    xmlCleanupParser();
-    /*
-     * this is to debug memory for regression tests
-     */
-    xmlMemoryDump();
     return(0);
 }
 #else
 int main(void) {
     fprintf(stderr, "XInclude support not compiled in\n");
-    exit(1);
+    return(0);
 }
 #endif
