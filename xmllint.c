@@ -84,7 +84,6 @@
 #ifndef XML_XML_DEFAULT_CATALOG
 #define XML_XML_DEFAULT_CATALOG "file://" SYSCONFDIR "/xml/catalog"
 #endif
-#endif
 
 typedef enum {
     XMLLINT_RETURN_OK = 0,	/* No error */

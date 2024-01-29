@@ -17,7 +17,7 @@
   #else
     #define XMLPUBLIC __declspec(dllimport)
   #endif
-#else if defined(__OS2__)
+#elif defined(__OS2__)
   #ifdef LIBXML_STATIC
     #define XMLPUBLIC
   #elif defined(IN_LIBXML)

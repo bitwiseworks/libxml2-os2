@@ -9,6 +9,7 @@ config.sub
 configure
 autom4te.cache/
 compile
+config.h.in
 config.h.in~
 depcomp
 install-sh
@@ -23,9 +24,11 @@ doc/Makefile.in
 doc/devhelp/Makefile.in
 doc/examples/Makefile.in
 example/Makefile.in
+fuzz/Makefile.in
 include/Makefile.in
 include/libxml/Makefile.in
 include/libxml/xmlversion.h
+include/private/Makefile.in
 python/Makefile.in
 python/setup.py
 python/tests/Makefile.in
